@@ -67,6 +67,91 @@ class PetsControllerTest < ActionController::TestCase
 
     assert_empty response.body
   end
+
+
+  test "#search for one match should return that match" do
+    # Send the request
+    get :search, { query: pets(:three).name }
+    assert_response :success
+
+    this_is_a_helper
+
+    # Check the response
+    assert_match 'application/json', response.header['Content-Type']
+    body = JSON.parse(response.body)
+    assert_instance_of Array, body
+
+    assert_equal 1, body.length
+    pet = body.first
+
+    # Check that the data sent matches what we requested
+    keys = %w( age human id name )
+    keys.each do |key|
+      value_from_server = pet[key]
+      value_from_fixture = pets(:three)[key]
+      assert_equal value_from_fixture, value_from_server
+    end
+
+    # Check that we didn't get any extra data
+    assert_equal keys, pet.keys.sort
+  end
+
+  test "#search with no matches returns an empty array" do
+    # Send the request
+    get :search, { query: 'xxzxxcxvx' }
+    assert_response :success
+
+    # Check the response
+    assert_match 'application/json', response.header['Content-Type']
+    body = JSON.parse(response.body)
+    assert_instance_of Array, body
+
+    assert_equal 0, body.length
+  end
+
+  test "#search with multiple matches returns multiple entries" do
+    # Send the request
+    get :search, { query: 'o' }
+    assert_response :success
+
+    # Check the response
+    assert_match 'application/json', response.header['Content-Type']
+    body = JSON.parse(response.body)
+    assert_instance_of Array, body
+
+    assert_equal 2, body.length
+
+    keys = %w( age human id name )
+    body.each do |pet|
+      assert_instance_of Hash, pet
+      assert_equal keys, pet.keys.sort
+    end
+  end
+
+  test "#search is case insensitive" do
+    # Send the request
+    get :search, { query: pets(:three).name.upcase }
+    assert_response :success
+
+    # Check the response
+    assert_match 'application/json', response.header['Content-Type']
+    body = JSON.parse(response.body)
+    assert_instance_of Array, body
+
+    assert_equal 1, body.length
+    pet = body.first
+
+    # Check that the data sent matches what we requested
+    keys = %w( age human id name )
+    keys.each do |key|
+      value_from_server = pet[key]
+      value_from_fixture = pets(:three)[key]
+      assert_equal value_from_fixture, value_from_server
+    end
+
+    # Check that we didn't get any extra data
+    assert_equal keys, pet.keys.sort
+  end
 end
 
 # # These are equivalent

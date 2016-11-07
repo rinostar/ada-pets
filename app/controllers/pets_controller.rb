@@ -12,4 +12,11 @@ class PetsController < ApplicationController
       render status: :not_found, nothing: true
     end
   end
+
+  def search
+    matches = Pet.all.select do |pet|
+      pet.name.downcase.include? params[:query].downcase
+    end
+    render json: matches, only: [:age, :id, :human, :name]
+  end
 end
