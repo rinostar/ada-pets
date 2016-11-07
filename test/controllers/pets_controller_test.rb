@@ -4,9 +4,9 @@ class PetsControllerTest < ActionController::TestCase
 
   # Necessary setup to allow ensure we support the API JSON type
   setup do
-     @request.headers['Accept'] = Mime::JSON
-     @request.headers['Content-Type'] = Mime::JSON.to_s
-   end
+    @request.headers['Accept'] = Mime::JSON
+    @request.headers['Content-Type'] = Mime::JSON.to_s
+  end
 
   test "can get #index" do
     get :index
@@ -37,4 +37,42 @@ class PetsControllerTest < ActionController::TestCase
     body = JSON.parse(response.body)
     assert_equal keys, body.map(&:keys).flatten.uniq.sort
   end
+
+  test "can #show a pet that exists" do
+    # Send the request
+    get :show, { id: pets(:one).id }
+    assert_response :success
+
+    # Check the response
+    assert_match 'application/json', response.header['Content-Type']
+    body = JSON.parse(response.body)
+    assert_instance_of Hash, body
+
+    # Check that the data sent matches what we requested
+    keys = %w( age human id name )
+    keys.each do |key|
+      value_from_server = body[key]
+      value_from_fixture = pets(:one)[key]
+      assert_equal value_from_fixture, value_from_server
+    end
+
+    # Check that we didn't get any extra data
+    assert_equal keys, body.keys.sort
+  end
+
+  test "#show for a id that doesn't exist returns no content" do
+    # Send the request
+    get :show, { id: 12345 }
+    assert_response :not_found
+
+    assert_empty response.body
+  end
 end
+
+# # These are equivalent
+# keys = %w( age human id name )
+# keys.map(&:upcase)
+# # and
+# keys.map do |key|
+#   key.upcase
+# end
