@@ -8,6 +8,21 @@ class PetsControllerTest < ActionController::TestCase
     @request.headers['Content-Type'] = Mime::JSON.to_s
   end
 
+  PET_KEYS = %w( age human id name )
+
+  def compare_pets(fixture, response)
+    # Check that we didn't get any extra data
+    assert_equal PET_KEYS, response.keys.sort
+
+    # Check that the data we did get matches the fixture
+    PET_KEYS.each do |key|
+      assert_equal fixture[key], response[key]
+    end
+  end
+
+  #
+  # INDEX
+  #
   test "can get #index" do
     get :index
     assert_response :success
@@ -32,12 +47,14 @@ class PetsControllerTest < ActionController::TestCase
   end
 
   test "each pet object contains the relevant keys" do
-    keys = %w( age human id name )
     get :index
     body = JSON.parse(response.body)
-    assert_equal keys, body.map(&:keys).flatten.uniq.sort
+    assert_equal PET_KEYS, body.map(&:keys).flatten.uniq.sort
   end
 
+  #
+  # SHOW
+  #
   test "can #show a pet that exists" do
     # Send the request
     get :show, { id: pets(:one).id }
@@ -48,16 +65,7 @@ class PetsControllerTest < ActionController::TestCase
     body = JSON.parse(response.body)
     assert_instance_of Hash, body
 
-    # Check that the data sent matches what we requested
-    keys = %w( age human id name )
-    keys.each do |key|
-      value_from_server = body[key]
-      value_from_fixture = pets(:one)[key]
-      assert_equal value_from_fixture, value_from_server
-    end
-
-    # Check that we didn't get any extra data
-    assert_equal keys, body.keys.sort
+    compare_pets(pets(:one), body)
   end
 
   test "#show for a id that doesn't exist returns no content" do
@@ -68,89 +76,57 @@ class PetsControllerTest < ActionController::TestCase
     assert_empty response.body
   end
 
-
-  test "#search for one match should return that match" do
-    # Send the request
-    get :search, { query: pets(:three).name }
+  #
+  # SEARCH
+  #
+  def send_search_request(query)
+    get :search, { query: query }
     assert_response :success
-
-    this_is_a_helper
 
     # Check the response
     assert_match 'application/json', response.header['Content-Type']
     body = JSON.parse(response.body)
     assert_instance_of Array, body
 
+    return body
+  end
+
+  test "#search for one match should return that match" do
+    body = send_search_request(pets(:three).name)
+
     assert_equal 1, body.length
-    pet = body.first
-
-    # Check that the data sent matches what we requested
-    keys = %w( age human id name )
-    keys.each do |key|
-      value_from_server = pet[key]
-      value_from_fixture = pets(:three)[key]
-      assert_equal value_from_fixture, value_from_server
-    end
-
-    # Check that we didn't get any extra data
-    assert_equal keys, pet.keys.sort
+    compare_pets(pets(:three), body.first)
   end
 
   test "#search with no matches returns an empty array" do
-    # Send the request
-    get :search, { query: 'xxzxxcxvx' }
-    assert_response :success
-
-    # Check the response
-    assert_match 'application/json', response.header['Content-Type']
-    body = JSON.parse(response.body)
-    assert_instance_of Array, body
+    body = send_search_request('xxzxxcxvx')
 
     assert_equal 0, body.length
   end
 
   test "#search with multiple matches returns multiple entries" do
-    # Send the request
-    get :search, { query: 'o' }
-    assert_response :success
-
-    # Check the response
-    assert_match 'application/json', response.header['Content-Type']
-    body = JSON.parse(response.body)
-    assert_instance_of Array, body
+    body = send_search_request('o')
 
     assert_equal 2, body.length
 
-    keys = %w( age human id name )
     body.each do |pet|
       assert_instance_of Hash, pet
-      assert_equal keys, pet.keys.sort
+      assert_equal PET_KEYS, pet.keys.sort
     end
   end
 
   test "#search is case insensitive" do
-    # Send the request
-    get :search, { query: pets(:three).name.upcase }
-    assert_response :success
-
-    # Check the response
-    assert_match 'application/json', response.header['Content-Type']
-    body = JSON.parse(response.body)
-    assert_instance_of Array, body
+    body = send_search_request(pets(:three).name.upcase)
 
     assert_equal 1, body.length
-    pet = body.first
+    compare_pets(pets(:three), body.first)
+  end
 
-    # Check that the data sent matches what we requested
-    keys = %w( age human id name )
-    keys.each do |key|
-      value_from_server = pet[key]
-      value_from_fixture = pets(:three)[key]
-      assert_equal value_from_fixture, value_from_server
-    end
+  test "#search returns partial matches" do
+    body = send_search_request("sprout")
 
-    # Check that we didn't get any extra data
-    assert_equal keys, pet.keys.sort
+    assert_equal 1, body.length
+    compare_pets(pets(:three), body.first)
   end
 end
 
