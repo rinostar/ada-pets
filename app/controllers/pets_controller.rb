@@ -14,9 +14,7 @@ class PetsController < ApplicationController
   end
 
   def search
-    matches = Pet.all.select do |pet|
-      pet.name.downcase.include? params[:query].downcase
-    end
-    render json: matches, only: [:age, :id, :human, :name]
+    pets = Pet.search(params[:query])
+    render json: pets, only: [:age, :id, :human, :name]
   end
 end

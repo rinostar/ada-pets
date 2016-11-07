@@ -129,11 +129,3 @@ class PetsControllerTest < ActionController::TestCase
     compare_pets(pets(:three), body.first)
   end
 end
-
-# # These are equivalent
-# keys = %w( age human id name )
-# keys.map(&:upcase)
-# # and
-# keys.map do |key|
-#   key.upcase
-# end
