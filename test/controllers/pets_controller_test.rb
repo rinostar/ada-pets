@@ -128,4 +128,28 @@ class PetsControllerTest < ActionController::TestCase
     assert_equal 1, body.length
     compare_pets(pets(:three), body.first)
   end
+
+
+  #
+  # CREATE
+  #
+  test "When #create is invoked, a pet is made" do
+    pet_data = {"name" => "fido", "age" => 3, "human" => "ada"}
+    assert_difference('Pet.count', 1) do
+      post :create, { "pet": pet_data }
+    end
+    assert_response :created
+
+    # Check the response
+    assert_match 'application/json', response.header['Content-Type']
+    body = JSON.parse(response.body)
+    assert_instance_of Hash, body
+
+    # Check the returned data
+    assert_equal 1, body.keys.length
+    assert_equal "id", body.keys.first
+
+    pet_from_database = Pet.find(body["id"])
+    assert_equal pet_data["name"], pet_from_database.name
+  end
 end
