@@ -4,7 +4,7 @@ class PetsControllerTest < ActionDispatch::IntegrationTest
   describe "index" do
     # These tests are a little verbose - yours do not need to be
     # this explicit.
-    it "can get index" do
+    it "is a real working route" do
       get pets_url
       assert_response :success
     end
@@ -35,6 +35,48 @@ class PetsControllerTest < ActionDispatch::IntegrationTest
       body.each do |pet|
         pet.keys.sort.must_equal keys
       end
+    end
+  end
+
+  describe "show" do
+    # This bit is up to you!
+  end
+
+  describe "create" do
+    let(:pet_data) {
+      {
+        name: "Jack",
+        age: 7,
+        human: "Captain Barbossa"
+      }
+    }
+
+    it "Creates a new pet" do
+      assert_difference "Pet.count", 1 do
+        post pets_url, params: { pet: pet_data }
+        assert_response :success
+      end
+
+      body = JSON.parse(response.body)
+      body.must_be_kind_of Hash
+      body.must_include "id"
+
+      # Check that the ID matches
+      Pet.find(body["id"]).name.must_equal pet_data["name"]
+    end
+
+    it "Returns an error for an invalid pet" do
+      bad_data = pet_data.clone()
+      bad_data.delete("name")
+      assert_no_difference "Pet.count" do
+        post pets_url, params: { pet: bad_data }
+        assert_response :bad_response
+      end
+
+      body = JSON.parse(response.body)
+      body.must_be_kind_of Hash
+      body.must_include "errors"
+      body["errors"].must_include "name"
     end
   end
 end
