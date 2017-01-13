@@ -1,12 +1,6 @@
 require 'test_helper'
 
 class PetsControllerTest < ActionDispatch::IntegrationTest
-  # Necessary setup to allow ensure we support the API JSON type
-  # before do
-  #   @request.headers['Accept'] = Mime::JSON
-  #   @request.headers['Content-Type'] = Mime::JSON.to_s
-  # end
-
   describe "index" do
     # These tests are a little verbose - yours do not need to be
     # this explicit.
