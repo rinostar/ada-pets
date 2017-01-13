@@ -62,15 +62,15 @@ class PetsControllerTest < ActionDispatch::IntegrationTest
       body.must_include "id"
 
       # Check that the ID matches
-      Pet.find(body["id"]).name.must_equal pet_data["name"]
+      Pet.find(body["id"]).name.must_equal pet_data[:name]
     end
 
     it "Returns an error for an invalid pet" do
       bad_data = pet_data.clone()
-      bad_data.delete("name")
+      bad_data.delete(:name)
       assert_no_difference "Pet.count" do
         post pets_url, params: { pet: bad_data }
-        assert_response :bad_response
+        assert_response :bad_request
       end
 
       body = JSON.parse(response.body)
