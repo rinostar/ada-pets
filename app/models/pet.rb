@@ -1,2 +1,2 @@
-class Pet < ActiveRecord::Base
+class Pet < ApplicationRecord
 end
