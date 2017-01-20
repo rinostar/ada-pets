@@ -1,40 +1,82 @@
 require 'test_helper'
 
-class PetsControllerTest < ActionController::TestCase
+class PetsControllerTest < ActionDispatch::IntegrationTest
+  describe "index" do
+    # These tests are a little verbose - yours do not need to be
+    # this explicit.
+    it "is a real working route" do
+      get pets_url
+      assert_response :success
+    end
 
-  # Necessary setup to allow ensure we support the API JSON type
-  setup do
-     @request.headers['Accept'] = Mime::JSON
-     @request.headers['Content-Type'] = Mime::JSON.to_s
-   end
+    it "returns json" do
+      get pets_url
+      response.header['Content-Type'].must_include 'json'
+    end
 
-  test "can get #index" do
-    get :index
-    assert_response :success
+    it "returns an Array" do
+      get pets_url
+
+      body = JSON.parse(response.body)
+      body.must_be_kind_of Array
+    end
+
+    it "returns all of the pets" do
+      get pets_url
+
+      body = JSON.parse(response.body)
+      body.length.must_equal Pet.count
+    end
+
+    it "returns pets with exactly the required fields" do
+      keys = %w(age human id name)
+      get pets_url
+      body = JSON.parse(response.body)
+      body.each do |pet|
+        pet.keys.sort.must_equal keys
+      end
+    end
   end
 
-  test "#index returns json" do
-    get :index
-    assert_match 'application/json', response.header['Content-Type']
+  describe "show" do
+    # This bit is up to you!
   end
 
-  test "#index returns an Array of Pet objects" do
-    get :index
-    # Assign the result of the response from the controller action
-    body = JSON.parse(response.body)
-    assert_instance_of Array, body
-  end
+  describe "create" do
+    let(:pet_data) {
+      {
+        name: "Jack",
+        age: 7,
+        human: "Captain Barbossa"
+      }
+    }
 
-  test "returns three pet objects" do
-    get :index
-    body = JSON.parse(response.body)
-    assert_equal 3, body.length
-  end
-
-  test "each pet object contains the relevant keys" do
-    keys = %w( age human id name )
-    get :index
-    body = JSON.parse(response.body)
-    assert_equal keys, body.map(&:keys).flatten.uniq.sort
+    # it "Creates a new pet" do
+    #   assert_difference "Pet.count", 1 do
+    #     post pets_url, params: { pet: pet_data }
+    #     assert_response :success
+    #   end
+    #
+    #   body = JSON.parse(response.body)
+    #   body.must_be_kind_of Hash
+    #   body.must_include "id"
+    #
+    #   # Check that the ID matches
+    #   Pet.find(body["id"]).name.must_equal pet_data[:name]
+    # end
+    #
+    # it "Returns an error for an invalid pet" do
+    #   bad_data = pet_data.clone()
+    #   bad_data.delete(:name)
+    #   assert_no_difference "Pet.count" do
+    #     post pets_url, params: { pet: bad_data }
+    #     assert_response :bad_request
+    #   end
+    #
+    #   body = JSON.parse(response.body)
+    #   body.must_be_kind_of Hash
+    #   body.must_include "errors"
+    #   body["errors"].must_include "name"
+    # end
   end
 end
