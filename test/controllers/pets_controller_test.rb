@@ -130,6 +130,16 @@ class PetsControllerTest < ActionDispatch::IntegrationTest
 
     it "Won't change the database if data is missing" do
 
+      proc {
+        post pets_path, params: {pet: {
+            age: 3,
+            human: "Sai"
+          }}
+      }.wont_change "Pet.count"
+      must_respond_with :bad_request
+
+      body = JSON.parse(response.body)
+      body.must_equal errors: {"name" => ["can't be blank"]}
 
     end
 
