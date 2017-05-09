@@ -6,7 +6,7 @@ class PetsControllerTest < ActionDispatch::IntegrationTest
     # this explicit.
     it "is a real working route" do
       get pets_url
-      assert_response :success
+      must_respond_with :success
     end
 
     it "returns json" do
