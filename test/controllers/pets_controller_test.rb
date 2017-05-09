@@ -40,6 +40,10 @@ class PetsControllerTest < ActionDispatch::IntegrationTest
 
   describe "show" do
     # This bit is up to you!
+    it "can get a pet" do
+      get pet_path(pets(:two).id)
+      must_respond_with :success
+    end
   end
 
   describe "create" do
