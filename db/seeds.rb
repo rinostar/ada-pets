@@ -10,20 +10,34 @@ pets = [
   {
     name: "Peanut",
     age: 2,
-    human: "Ada"
+    person_id: 1
   },
   {
     name: "Horsetooth",
     age: 14,
-    human: "Grace"
+    person_id: 2
   },
   {
     name: "Beansprout",
     age: 1,
-    human: "Katherine"
+    person_id: 2
   }
 ]
 
 pets.each do |pet|
   Pet.create(pet)
+end
+
+
+people = [
+  {
+    name: "Katherine"
+  },
+  {
+    name: "Grace"
+  }
+]
+
+people.each do |person|
+  Person.create(person)
 end

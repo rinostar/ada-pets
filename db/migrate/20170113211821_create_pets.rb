@@ -3,7 +3,7 @@ class CreatePets < ActiveRecord::Migration[5.0]
     create_table :pets do |t|
       t.string :name
       t.integer :age
-      t.string :human
+      t.belongs_to :person
 
       t.timestamps
     end
