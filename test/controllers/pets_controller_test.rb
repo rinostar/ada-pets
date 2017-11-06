@@ -77,6 +77,15 @@ class PetsControllerTest < ActionDispatch::IntegrationTest
       }
     }
 
+
+    it "Create a Pet" do
+      proc {
+        post pets_path, params: {pet: pet_data}
+      }.must_change 'Pet.count', 1
+
+      must_respond_with :success
+    end
+
     # it "Creates a new pet" do
     #   assert_difference "Pet.count", 1 do
     #     post pets_url, params: { pet: pet_data }

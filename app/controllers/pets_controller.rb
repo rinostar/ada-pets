@@ -1,4 +1,6 @@
 class PetsController < ApplicationController
+  protect_from_forgery with: :null_session
+
   def index
     pets = Pet.all
 
@@ -21,4 +23,24 @@ class PetsController < ApplicationController
       )
     end
   end
+
+  def create
+    pet = Pet.new(pet_params)
+
+    pet.save
+    render(
+      json: {id: pet.id}, status: :ok
+    )
+  end
+
+
+
+ private
+
+ def pet_params
+   params.require(:pet).permit(:name, :age, :human)
+ end
+
+
+
 end
