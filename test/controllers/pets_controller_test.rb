@@ -56,6 +56,8 @@ class PetsControllerTest < ActionDispatch::IntegrationTest
       get pet_path(pets(:two).id)
       must_respond_with :success
     end
+
+    
   end
 
   describe "create" do

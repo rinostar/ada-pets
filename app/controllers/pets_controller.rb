@@ -7,4 +7,12 @@ class PetsController < ApplicationController
       status: :ok
     )
   end
+
+  def show
+    pet = Pet.find_by(id: params[:id])
+
+    render(
+      json: pet.as_json(only: [:id, :name, :age, :human]), status: :ok
+    )
+  end
 end
