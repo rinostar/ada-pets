@@ -27,10 +27,15 @@ class PetsController < ApplicationController
   def create
     pet = Pet.new(pet_params)
 
-    pet.save
-    render(
-      json: {id: pet.id}, status: :ok
-    )
+    if pet.save
+      render(
+        json: {id: pet.id}, status: :ok
+      )
+    else
+      render(
+        json: {errors: pet.errors.messages}, status: :bad_request
+      )
+    end
   end
 
 

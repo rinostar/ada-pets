@@ -86,6 +86,22 @@ class PetsControllerTest < ActionDispatch::IntegrationTest
       must_respond_with :success
     end
 
+    it "Won't change the database if data is missing" do
+      invalid_pet_data = {
+        age: 2,
+        human: "Jamie"
+      }
+
+      proc {
+        post pets_path, params: {pet: invalid_pet_data}
+      }.wont_change 'Pet.count'
+
+      must_respond_with :bad_request
+
+      body = JSON.parse(response.body)
+      body.must_equal "errors" => {"name" => ["can't be blank"]}
+    end
+
     # it "Creates a new pet" do
     #   assert_difference "Pet.count", 1 do
     #     post pets_url, params: { pet: pet_data }
