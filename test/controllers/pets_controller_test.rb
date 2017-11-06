@@ -2,8 +2,6 @@ require 'test_helper'
 
 class PetsControllerTest < ActionDispatch::IntegrationTest
   describe "index" do
-    # These tests are a little verbose - yours do not need to be
-    # this explicit.
     it "is a real working route" do
       get pets_url
       must_respond_with :success
