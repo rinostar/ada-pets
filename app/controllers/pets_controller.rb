@@ -5,7 +5,7 @@ class PetsController < ApplicationController
     pets = Pet.all
 
     render(
-      json: pets.as_json(only: [:age, :id, :human, :name]),
+      json: pets,
       status: :ok
     )
   end
@@ -15,7 +15,7 @@ class PetsController < ApplicationController
 
     if pet
       render(
-        json: pet.as_json(only: [:id, :name, :age, :human]), status: :ok
+        json: pet, status: :ok
       )
     else
       render(
