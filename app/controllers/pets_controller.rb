@@ -3,7 +3,7 @@ class PetsController < ApplicationController
     pets = Pet.all
 
     render(
-      json: pets.as_json(only: [:age, :id, :human, :name]),
+      json: pets,
       status: :ok
     )
   end
@@ -12,7 +12,7 @@ class PetsController < ApplicationController
     pet = Pet.find_by(id: params[:id])
 
     if pet
-      render json: pet.as_json(only: [:age, :id, :human, :name]), status: :ok
+      render json: pet, status: :ok
     else
       render json: { ok: false }, status: :not_found
     end
@@ -22,7 +22,7 @@ class PetsController < ApplicationController
     pet = Pet.create(pets_params)
 
     if pet.valid?
-      render json: pet.as_json(only: [:age, :id, :human, :name]), status: :created
+      render json: pet, status: :created
     else
       render json: {errors: pet.errors.messages}, status: :bad_request
     end
