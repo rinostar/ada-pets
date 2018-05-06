@@ -44,6 +44,18 @@ class PetsControllerTest < ActionDispatch::IntegrationTest
       get pet_path(pets(:two).id)
       must_respond_with :success
     end
+
+    it "returns 404 when the pet does not exist" do
+      pet = pets(:two)
+      pet.destroy
+
+      get pet_path(pet.id)
+
+      must_respond_with :not_found
+      json_response = JSON.parse(response.body)
+
+      json_response["ok"].must_equal false
+    end
   end
 
   describe "create" do
@@ -54,6 +66,31 @@ class PetsControllerTest < ActionDispatch::IntegrationTest
         human: "Captain Barbossa"
       }
     }
+
+    it "can create a pet" do
+      proc {
+        post pets_path params: {pet: pet_data }
+      }.must_change 'Pet.count', 1
+
+      json_response = JSON.parse(response.body)
+
+      json_response["ok"].must_equal true
+      id = Pet.find_by(name: pet_data[:name]).id
+
+      json_response["id"].must_equal id
+    end
+
+    it "responds bad_request, for a poorly formatted request" do
+      proc {
+        post pets_path params: {pet: { age: 27 }}
+      }.wont_change 'Pet.count'
+      json_response = JSON.parse(response.body)
+
+
+      must_respond_with :bad_request
+      json_response["ok"].must_equal false
+      json_response["errors"].keys.must_include "name"
+    end
 
     # it "Creates a new pet" do
     #   assert_difference "Pet.count", 1 do
