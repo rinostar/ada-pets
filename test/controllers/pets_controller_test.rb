@@ -5,7 +5,7 @@ class PetsControllerTest < ActionDispatch::IntegrationTest
     # These tests are a little verbose - yours do not need to be
     # this explicit.
     it "is a real working route" do
-      get pets_url
+      get pets_path
       must_respond_with :success
     end
 
@@ -44,6 +44,18 @@ class PetsControllerTest < ActionDispatch::IntegrationTest
       get pet_path(pets(:two).id)
       must_respond_with :success
     end
+
+    it "returns a 404 for pets that are not found" do
+      # Arrange
+      pet = pets(:two)
+      pet.destroy
+      # Action
+      get pet_path(pet.id)
+
+      # Assert
+      must_respond_with :not_found
+
+    end
   end
 
   describe "create" do
@@ -55,11 +67,36 @@ class PetsControllerTest < ActionDispatch::IntegrationTest
       }
     }
 
-    # it "Creates a new pet" do
-    #   assert_difference "Pet.count", 1 do
-    #     post pets_url, params: { pet: pet_data }
-    #     assert_response :success
-    #   end
+    it "Creates a new pet" do
+
+      proc {
+        post pets_path, params: {pet: pet_data}
+      }.must_change 'Pet.count', 1
+
+      must_respond_with :success
+
+      # assert_difference "Pet.count", 1 do
+      #   post pets_url, params: { pet: pet_data }
+      #   assert_response :success
+      end
+
+      it "returns bad request for bad params data" do
+        # Arrage
+        pet_data.delete(:name)
+        # Act
+        proc {
+          post pets_path, params: {pet: pet_data}
+        }.wont_change 'Pet.count'
+        # Asserts
+        must_respond_with :bad_request
+          body = JSON.parse(response.body)
+          body.must_be_kind_of Hash
+          body.must_include "ok"
+          body["ok"].must_equal false
+          body.must_include "errors"
+          body["errors"].must_include "name"
+
+      end
     #
     #   body = JSON.parse(response.body)
     #   body.must_be_kind_of Hash
