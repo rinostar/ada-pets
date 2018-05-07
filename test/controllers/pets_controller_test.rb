@@ -39,11 +39,36 @@ class PetsControllerTest < ActionDispatch::IntegrationTest
   end
 
   describe "show" do
-    # This bit is up to you!
     it "can get a pet" do
-      skip
-      get pet_path(pets(:two).id)
+      # Arrange
+      keys = %w(age human id name)
+      pet = pets(:two)
+
+      # Act
+      get pet_path(pet.id)
+
+      # Assert
       must_respond_with :success
+
+      response.header['Content-Type'].must_include 'json'
+      body = JSON.parse(response.body)
+      body.must_be_kind_of Hash
+      body.keys.sort.must_equal keys
+      body["id"].must_equal pet.id
+    end
+
+    it "yields a not_found status and also return some error text if the pet D.N.E." do
+      pet_id = Pet.last.id + 1
+
+      get pet_path(pet_id)
+
+      must_respond_with :not_found
+
+      # Check that it sent us some error text
+      body = JSON.parse(response.body)
+      body.must_be_kind_of Hash
+      body.must_include "errors"
+      body["errors"].must_include "id"
     end
   end
 
