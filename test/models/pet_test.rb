@@ -1,7 +1,7 @@
 require 'test_helper'
 
 class PetTest < ActiveSupport::TestCase
-  let (:peanut) {users(:one)}
+  let (:peanut) {pets(:one)}
   it "can be created" do
     expect(peanut.valid?).must_equal true
   end
@@ -16,5 +16,11 @@ class PetTest < ActiveSupport::TestCase
 
        peanut.reload
     end
+  end
+
+  it "requires a numeric age" do
+    peanut.age = "three"
+
+    expect(peanut.valid?).must_equal false
   end
 end
