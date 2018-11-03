@@ -1,4 +1,24 @@
-# Ada Pets
-This repository goes along with the [Creating APIs](https://github.com/Ada-Developers-Academy/textbook-curriculum/blob/master/09-intermediate-rails/creating-apis.md) curriculum.
+# README
 
-This repository will be used to track our favorite pets. The `master` branch contains an initial `Pets` controller as well as a `Pet` model. Take a look at these to get you started. There is also one `index` route, and a basic controller implementation for that route.
+This README would normally document whatever steps are necessary to get the
+application up and running.
+
+Things you may want to cover:
+
+* Ruby version
+
+* System dependencies
+
+* Configuration
+
+* Database creation
+
+* Database initialization
+
+* How to run the test suite
+
+* Services (job queues, cache servers, search engines, etc.)
+
+* Deployment instructions
+
+* ...
