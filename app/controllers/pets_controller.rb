@@ -1,10 +1,10 @@
 class PetsController < ApplicationController
   def index
-    pets = Pet.all
+    @pets = Pet.all
     # render json: {want_some_pie: true}
 
     # render json: pets
-    render json: pets.as_json(only: [:id, :name, :age, :human] ), status: :ok
+    #render json: pets.as_json(only: [:id, :name, :age, :human] ), status: :ok
     # render json: pets.as_json( except: [:created_at, :updated_at] )
   end
 
@@ -28,7 +28,7 @@ class PetsController < ApplicationController
     if pet.save
       render json: {
         ok: true,
-        pet:  pet.as_json(except: [:created_at, :updated_at])
+        pet:  pet.as_json(only: [:id])
       }, status: :ok
     else
       render json: {
