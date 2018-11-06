@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class PetsControllerTest < ActionDispatch::IntegrationTest
+describe PetsController do
   describe "index" do
     # These tests are a little verbose - yours do not need to be
     # this explicit.
