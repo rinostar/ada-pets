@@ -1,4 +1,4 @@
-require 'test_helper'
+require "test_helper"
 
 describe PetsController do
   describe "index" do
@@ -9,85 +9,42 @@ describe PetsController do
       must_respond_with :success
     end
 
+    it "returns json" do
+      get pets_path
+      expect(response.header["Content-Type"]).must_include "json"
+    end
 
+    it "returns an Array" do
+      get pets_path
 
+      body = JSON.parse(response.body)
+      body.must_be_kind_of Array
+    end
 
+    it "returns all of the pets" do
+      get pets_path
 
+      body = JSON.parse(response.body)
+      body.length.must_equal Pet.count
+    end
 
+    it "returns pets with exactly the required fields" do
+      keys = %w(age human id name)
+      get pets_path
+      body = JSON.parse(response.body)
+      body.each do |pet|
+        pet.keys.sort.must_equal keys
+      end
+    end
+  end
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-  #   it "returns json" do
-  #     get pets_path
-  #     expect(response.header['Content-Type']).must_include 'json'
-  #   end
-
-  #   it "returns an Array" do
-  #     get pets_path
-
-  #     body = JSON.parse(response.body)
-  #     body.must_be_kind_of Array
-  #   end
-
-  #   it "returns all of the pets" do
-  #     get pets_path
-
-  #     body = JSON.parse(response.body)
-  #     body.length.must_equal Pet.count
-  #   end
-
-  #   it "returns pets with exactly the required fields" do
-  #     keys = %w(age human id name)
-  #     get pets_path
-  #     body = JSON.parse(response.body)
-  #     body.each do |pet|
-  #       pet.keys.sort.must_equal keys
-  #     end
-  #   end
-  # end
-
-  # describe "show" do
-  #   # This bit is up to you!
-  #   it "can get a pet" do
-  #     get pet_path(pets(:two).id)
-  #     must_respond_with :success
-  #   end
-  # end
+  describe "show" do
+    # This bit is up to you!
+    it "can get a pet" do
+      get pet_path(pets(:two).id)
+      must_respond_with :success
+    end
+  end
 
   # describe "create" do
   #   let(:pet_data) {
@@ -129,5 +86,5 @@ describe PetsController do
   #     must_respond_with :bad_request
   #   end
 
-  end
+  # end
 end
