@@ -46,45 +46,45 @@ describe PetsController do
     end
   end
 
-  # describe "create" do
-  #   let(:pet_data) {
-  #     {
-  #       name: "Jack",
-  #       age: 7,
-  #       human: "Captain Barbossa"
-  #     }
-  #   }
+  describe "create" do
+    let(:pet_data) {
+      {
+        name: "Jack",
+        age: 7,
+        human: "Captain Barbossa"
+      }
+    }
 
-  #   it "creates a new pet given valid data" do
-  #     expect {
-  #     post pets_path, params: { pet: pet_data }
-  #   }.must_change "Pet.count", 1
+    it "creates a new pet given valid data" do
+      expect {
+      post pets_path, params: { pet: pet_data }
+    }.must_change "Pet.count", 1
 
-  #     body = JSON.parse(response.body)
-  #     expect(body).must_be_kind_of Hash
-  #     expect(body).must_include "id"
+      body = JSON.parse(response.body)
+      expect(body).must_be_kind_of Hash
+      expect(body).must_include "id"
 
-  #     pet = Pet.find(body["id"].to_i)
+      pet = Pet.find(body["id"].to_i)
 
-  #     expect(pet.name).must_equal pet_data[:name]
-  #     must_respond_with :success
-  #   end
+      expect(pet.name).must_equal pet_data[:name]
+      must_respond_with :success
+    end
 
-  #   it "returns an error for invalid pet data" do
-  #     # arrange
-  #     pet_data["name"] = nil
+    it "returns an error for invalid pet data" do
+      # arrange
+      pet_data["name"] = nil
 
-  #     expect {
-  #     post pets_path, params: { pet: pet_data }
-  #   }.wont_change "Pet.count"
+      expect {
+      post pets_path, params: { pet: pet_data }
+    }.wont_change "Pet.count"
 
-  #     body = JSON.parse(response.body)
+      body = JSON.parse(response.body)
 
-  #     expect(body).must_be_kind_of Hash
-  #     expect(body).must_include "errors"
-  #     expect(body["errors"]).must_include "name"
-  #     must_respond_with :bad_request
-  #   end
+      expect(body).must_be_kind_of Hash
+      expect(body).must_include "errors"
+      expect(body["errors"]).must_include "name"
+      must_respond_with :bad_request
+    end
 
-  # end
+  end
 end
