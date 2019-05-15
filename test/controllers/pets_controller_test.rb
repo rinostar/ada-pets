@@ -42,7 +42,18 @@ describe PetsController do
     # This bit is up to you!
     it "can get a pet" do
       get pet_path(pets(:two).id)
+
       must_respond_with :success
+      expect(response.header["Content-Type"]).must_include "json"
+
+      body = JSON.parse(response.body)
+      body.must_be_kind_of Hash
+
+      expected_keys = ["id", "name", "age", "human"]
+
+      body.keys.each do |key|
+        expected_keys.must_include key
+      end
     end
   end
 
