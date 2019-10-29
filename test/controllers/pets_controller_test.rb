@@ -66,4 +66,23 @@ describe PetsController do
       expect(body.keys).must_include "errors"
     end
   end
+
+  describe "create" do
+    let(:pet_data) {
+      {
+        pet: {
+          age: 13,
+          name: 'Stinker',
+          human: 'Grace'
+        }
+      }
+    }
+    it "can create a new pet" do
+      expect {
+        post pets_path, params: pet_data
+      }.must_differ 'Pet.count', 1
+
+      must_respond_with :created
+    end
+  end
 end
