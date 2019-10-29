@@ -1,6 +1,7 @@
 class PetsController < ApplicationController
   def index
-    render json: { ready_for_lunch: "yassss" }
+    pets = Pet.all.as_json(only: [:name, :age, :human])
+    render json: pets, status: :ok
   end
 
 
