@@ -84,5 +84,24 @@ describe PetsController do
 
       must_respond_with :created
     end
+
+    it "will respond with bad_request for invalid data" do
+      # Arrange
+      pet_data[:pet][:age] = nil
+
+      expect {
+        # Act
+        post pets_path, params: pet_data
+
+      # Assert
+      }.wont_change "Pet.count"
+
+      must_respond_with :bad_request
+
+      expect(response.header['Content-Type']).must_include 'json'
+      body = JSON.parse(response.body)
+      expect(body).must_be_instance_of Hash
+      expect(body["errors"].keys).must_include "age"
+    end
   end
 end
