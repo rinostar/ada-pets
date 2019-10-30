@@ -1,6 +1,6 @@
 class PetsController < ApplicationController
   def index
-    pets = Pet.all.as_json(only: [:name, :age, :human])
+    pets = Pet.all.as_json(only: [:id, :name, :age, :human])
     render json: pets, status: :ok
   end
 
@@ -8,7 +8,7 @@ class PetsController < ApplicationController
     pet = Pet.find_by(id: params[:id])
 
     if pet
-      render json: pet.as_json(only: [:name, :age, :human])
+      render json: pet.as_json(only: [:id, :name, :age, :human])
       return
     else
       render json: { ok: false, errors: ["Not Found"] }, status: :not_found
