@@ -1,25 +1,34 @@
 require 'test_helper'
 
 describe PetsController do
+  PET_FIELDS = %w(id age name human).sort
+
+  def check_response(expected_type:, expected_status: :success)
+    must_respond_with expected_status
+    expect(response.header['Content-Type']).must_include 'json'
+
+    body = JSON.parse(response.body)
+    expect(body).must_be_kind_of expected_type
+    return body
+  end
 
   describe "index" do
     it "responds with JSON and success" do
+      # Act
       get pets_path
 
-      expect(response.header['Content-Type']).must_include 'json'
-      must_respond_with :ok
+      # Assert
+      check_response(expected_type: Array)
     end
 
-    PET_FIELDS = ["age", "human", "name"]
     it "responds with an array of pet hashes" do
-
+      # Act
       get pets_path
 
-      body = JSON.parse(response.body)
+      # Assert
+      body = check_response(expected_type: Array)
 
-      expect(body).must_be_instance_of Array
       body.each do |pet|
-        expect(pet).must_be_instance_of Hash
         expect(pet.keys.sort).must_equal PET_FIELDS
       end
     end
@@ -30,10 +39,9 @@ describe PetsController do
 
       # Act
       get pets_path
-      body = JSON.parse(response.body)
 
       # Assert
-      expect(body).must_be_instance_of Array
+      body = check_response(expected_type: Array)
       expect(body).must_equal []
     end
   end
